@@ -1,0 +1,30 @@
+{
+  "name": "weekly-report",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:front": "turbo dev --filter=!@wr/server",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "db:up": "pnpm --filter @wr/server db:up",
+    "db:push": "pnpm --filter @wr/server db:push",
+    "db:seed": "pnpm --filter @wr/server seed:local",
+    "db:studio": "pnpm --filter @wr/server db:studio"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10",
+    "turbo": "^2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "prisma",
+      "@prisma/engines",
+      "@prisma/client",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
+  "packageManager": "pnpm@10.34.9"
+}

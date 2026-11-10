@@ -1,0 +1,17 @@
+# 로컬 개발용 PostgreSQL (AWS 없이 개발할 때)
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: weekly-report-db
+    ports:
+      - "5442:5432"
+    environment:
+      POSTGRES_DB: weekly_report
+      POSTGRES_USER: wr
+      POSTGRES_PASSWORD: wr1234
+      TZ: Asia/Seoul
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

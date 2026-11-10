@@ -1,0 +1,137 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+// ─── 사용자 ──────────────────────────────────────────────────────────────────
+
+/// 사용자 — 연구소 구성원 + 관리자 통합
+model User {
+  /// PK
+  id               Int       @id @default(autoincrement())
+  /// 이메일 (unique). 로그인 식별자
+  email            String    @unique
+  /// 이름
+  name             String
+  /// bcrypt 해시. 평문 저장 금지
+  passwordHash     String    @map("password_hash")
+  /// 권한 — ADMIN / MEMBER
+  role             Role      @default(MEMBER)
+  /// 소속 (팀/실험실 등). 자유 입력
+  department       String    @default("")
+  /// 직위 (책임연구원/선임연구원/연구원 등). 자유 입력
+  position         String    @default("")
+  /// 재직 여부. false면 로그인 차단 + 제출현황 집계 제외
+  isActive         Boolean   @default(true) @map("is_active")
+  /// 초기 비밀번호 변경 여부. false면 첫 로그인 시 변경 강제
+  passwordChanged  Boolean   @default(false) @map("password_changed")
+  /// 연속 로그인 실패 횟수. 5회 이상이면 잠금
+  failedLoginCount Int       @default(0) @map("failed_login_count")
+  /// 마지막 로그인 시각
+  lastLoginAt      DateTime? @map("last_login_at")
+  /// 레코드 생성 시각
+  createdAt        DateTime  @default(now()) @map("created_at")
+  /// 레코드 수정 시각
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+// ─── 프로젝트 ────────────────────────────────────────────────────────────────
+
+/// 프로젝트 (과제) — 어드민이 등록. ACTIVE 만 주간보고에서 선택 가능
+model Project {
+  /// PK
+  id          Int           @id @default(autoincrement())
+  /// 과제 코드 (unique). 예: 2026-NRF-001
+  code        String        @unique
+  /// 프로젝트명
+  name        String
+  /// 설명 (발주처, 과제 개요 등)
+  description String        @default("")
+  /// 상태 — ACTIVE / CLOSED
+  status      ProjectStatus @default(ACTIVE)
+  /// 과제 시작일
+  startDate   DateTime?     @map("start_date") @db.Date
+  /// 과제 종료일
+  endDate     DateTime?     @map("end_date") @db.Date
+  /// 정렬 순서 (작을수록 위)
+  sortOrder   Int           @default(0) @map("sort_order")
+  /// 레코드 생성 시각
+  createdAt   DateTime      @default(now()) @map("created_at")
+  /// 레코드 수정 시각
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  ACTIVE
+  CLOSED
+}
+
+// ─── 주간보고 ────────────────────────────────────────────────────────────────
+
+/// 주간보고 — 사용자 × 주(월요일) 당 1건
+model WeeklyReport {
+  /// PK
+  id          Int          @id @default(autoincrement())
+  /// 작성자 FK (users.id, relationMode=prisma — 인덱스만)
+  userId      Int          @map("user_id")
+  /// 주 시작일 (월요일)
+  weekStart   DateTime     @map("week_start") @db.Date
+  /// 상태 — DRAFT(임시저장) / SUBMITTED(제출)
+  status      ReportStatus @default(DRAFT)
+  /// 이슈/건의/기타 메모
+  note        String       @default("")
+  /// 제출 시각
+  submittedAt DateTime?    @map("submitted_at")
+  /// 레코드 생성 시각
+  createdAt   DateTime     @default(now()) @map("created_at")
+  /// 레코드 수정 시각
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  @@unique([userId, weekStart])
+  @@index([weekStart])
+  @@map("weekly_reports")
+}
+
+enum ReportStatus {
+  DRAFT
+  SUBMITTED
+}
+
+/// 주간보고 항목 — 프로젝트별 참여율 + 수행 내용
+model WeeklyReportItem {
+  /// PK
+  id                Int      @id @default(autoincrement())
+  /// 주간보고 FK (weekly_reports.id)
+  reportId          Int      @map("report_id")
+  /// 프로젝트 FK (projects.id)
+  projectId         Int      @map("project_id")
+  /// 참여율 (%) 1~100. 제출 시 보고서 내 합계 = 100
+  participationRate Int      @map("participation_rate")
+  /// 이번 주 수행 내용
+  doneText          String   @default("") @map("done_text")
+  /// 다음 주 계획
+  planText          String   @default("") @map("plan_text")
+  /// 보고서 내 표시 순서
+  sortOrder         Int      @default(0) @map("sort_order")
+  /// 레코드 생성 시각
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  @@unique([reportId, projectId])
+  @@index([projectId])
+  @@map("weekly_report_items")
+}

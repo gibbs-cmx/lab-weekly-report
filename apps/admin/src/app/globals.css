@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * 디자인 토큰 — DESIGN.md "연구노트" 시스템.
+ * 종이색 바탕 + 잉크 텍스트, 코발트는 포커스/링크에만. 프로젝트 색은 shared/lib/project-color.ts
+ */
+@theme inline {
+  --font-sans: var(--font-plex-sans), "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-heading: var(--font-sans);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* 시스템 고유 토큰 */
+  --color-ink: #15171a;
+  --color-ink-soft: #33363b;
+  --color-sub: #4a4e55;
+  --color-faint: #a3a6ab;
+  --color-paper: #f6f5f1;
+  --color-paper-soft: #fbfaf7;
+  --color-line: #e7e5df;
+  --color-line-soft: #f0eee9;
+  --color-line-strong: #dcdad3;
+  --color-track: #f3f2ee;
+  --color-cobalt: #2f4fd9;
+  --color-ok: #1f7a55;
+  --color-ok-fg: #1a6648;
+  --color-ok-bg: #e3f2ea;
+  --color-warn: #c98213;
+  --color-warn-fg: #8a5a00;
+  --color-warn-bg: #fbf1de;
+  --color-bad: #b4472f;
+  --color-bad-fg: #9a3a25;
+  --color-bad-bg: #f9e8e3;
+
+  /* 관리자 사이드바 (잉크) */
+  --color-side: #15171a;
+  --color-side-raised: #1f2227;
+  --color-side-active: #2a2d33;
+  --color-side-text: #b9bbc0;
+  --color-side-dim: #9a9da3;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-4xl: 999px;
+}
+
+:root {
+  --background: #f6f5f1;
+  --foreground: #15171a;
+  --card: #ffffff;
+  --card-foreground: #15171a;
+  --popover: #ffffff;
+  --popover-foreground: #15171a;
+  --primary: #15171a;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f2ee;
+  --secondary-foreground: #33363b;
+  --muted: #f3f2ee;
+  --muted-foreground: #6a6e75;
+  --accent: #f3f2ee;
+  --accent-foreground: #15171a;
+  --destructive: #b4472f;
+  --border: #e7e5df;
+  --input: #dcdad3;
+  --ring: #2f4fd9;
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    line-height: 1.55;
+  }
+  html {
+    @apply font-sans;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* 숫자·코드용 모노 */
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}

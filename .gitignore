@@ -1,0 +1,45 @@
+# dependencies
+node_modules
+/.pnp
+.pnp.*
+
+# testing
+/coverage
+**/coverage/
+
+# next.js
+.next/
+out/
+
+# turborepo
+.turbo/
+
+# production
+/build
+dist/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+.pnpm-debug.log*
+
+# env files
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# cdk
+cdk.out/
+cdk.context.json
+
+# claude code (personal settings only)
+.claude/settings.local.json
+.claude/plugins/
